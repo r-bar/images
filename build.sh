@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IMAGE=$1
-BASE_REPO=docker.pkg.github.com/r-bar/images
+BASE_REPO=rbartech
 REPO=$BASE_REPO/$IMAGE
 TAGS=$(ls -1 $IMAGE/tags)
 
