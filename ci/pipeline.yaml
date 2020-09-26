@@ -1,3 +1,11 @@
+---
+resource_types:
+  - name: github-status
+    type: docker-image
+    source:
+      repository: registry.barth.tech/library/concourse_github_status
+      tag: latest
+
 resources:
 
   - name: git-repo
