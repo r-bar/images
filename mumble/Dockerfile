@@ -16,4 +16,4 @@ RUN mkdir /etc/mumble \
 
 COPY entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT [/entrypoint.sh]
+CMD [/entrypoint.sh]
