@@ -18,7 +18,7 @@ jobs:
       - put: utility-image
         params:
           build: git-repo/utility
-          additional_tags: repo/utility/tags
+          additional_tags: git-repo/utility/tags
         on_failure: &on_failure
           put: build-status
           params: {state: failure, commit: git-repo}

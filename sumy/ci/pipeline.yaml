@@ -18,7 +18,7 @@ jobs:
       - put: sumy-image
         params:
           build: git-repo/sumy
-          additional_tags: repo/sumy/tags
+          additional_tags: git-repo/sumy/tags
         on_failure: &on_failure
           put: build-status
           params: {state: failure, commit: git-repo}

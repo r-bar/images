@@ -18,7 +18,7 @@ jobs:
       - put: mumble-image
         params:
           build: git-repo/mumble
-          additional_tags: repo/mumble/tags
+          additional_tags: git-repo/mumble/tags
         on_failure: &on_failure
           put: build-status
           params: {state: failure, commit: git-repo}
