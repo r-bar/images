@@ -1,3 +1,4 @@
+---
 resources:
   - name: esh-image
     type: docker-image
@@ -9,9 +10,10 @@ resources:
   - name: esh-release
     icon: github
     type: github-release
+    check_every: 48h
     source:
       owner: jirutka
-      repo: esh
+      repository: esh
       access_token: ((github-access-token))
 
 jobs:
@@ -31,8 +33,8 @@ jobs:
             type: registry-image
             source:
               repository: alpine
-          inputs: [{name: git-repo}]
-          outputs: [{name: git-repo}]
+          inputs: [{name: esh-release}]
+          outputs: [{name: esh-release}]
           run:
             path: ash
             args:
