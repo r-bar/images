@@ -50,7 +50,7 @@ jobs:
                 apk add --no-progress python3 jsonnet
                 cd git-repo
                 ./build.py images > ci/images.json
-                jsonnet ci/build-and-push.jsonnet > ci/full-pipeline.yaml
+                jsonnet ci/build-and-push.jsonnet | tee ci/full-pipeline.yaml
 
       - set_pipeline: self
         file: git-repo/ci/full-pipeline.yaml
