@@ -38,16 +38,17 @@ jobs:
           image_resource:
             type: registry-image
             source:
-              repository: alpine
+              repository: registry.barth.tech/docker.io/library/python:3.10
           inputs: [{name: git-repo}]
           outputs: [{name: git-repo}]
           run:
-            path: ash
+            path: bash
             args:
               - -c
               - |
                 set -e
-                apk add --no-progress python3 jsonnet
+                apt-get update
+                apt-get install jsonnet
                 cd git-repo
                 ./build.py images > ci/images.json
                 jsonnet ci/build-and-push.jsonnet | tee ci/full-pipeline.yaml
