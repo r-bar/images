@@ -67,7 +67,7 @@ local project_jobs = [
         branch: 'master',
         private_key: '((git-config.ssh-private-key))',
       },
-      webhook_token: '((webhook-token))',
+      webhook_token: '((git-config.webhook-token))',
       check_every: '24h',
     },
     //{
