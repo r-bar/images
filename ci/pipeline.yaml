@@ -47,9 +47,10 @@ jobs:
               - -c
               - |
                 set -e
-                apk add --no-progress make python3 py3-yaml
+                apk add --no-progress python3 jsonnet
                 cd git-repo
-                make ci/full-pipeline.yaml
+                ./build.py images > ci/images.json
+                jsonnet ci/build-and-push.jsonnet > ci/full-pipeline.yaml
 
       - set_pipeline: self
         file: git-repo/ci/full-pipeline.yaml
