@@ -48,7 +48,7 @@ jobs:
               - |
                 set -e
                 apt-get update
-                apt-get install jsonnet
+                apt-get install -y jsonnet
                 cd git-repo
                 ./build.py images > ci/images.json
                 jsonnet ci/build-and-push.jsonnet | tee ci/full-pipeline.yaml
