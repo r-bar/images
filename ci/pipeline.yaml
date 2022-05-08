@@ -18,13 +18,13 @@ resources:
     webhook_token: ((webhook-token))
     check_every: 24h
 
-  - name: build-status
-    type: github-status
-    icon: list-status
-    source:
-      owner: r-bar
-      repository: images
-      access_token: ((github-access-token))
+  #- name: build-status
+  #  type: github-status
+  #  icon: list-status
+  #  source:
+  #    owner: r-bar
+  #    repository: images
+  #    access_token: ((github-access-token))
 
 jobs:
   - name: update-pipeline
