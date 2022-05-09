@@ -33,7 +33,6 @@ def images():
         yield {
             "image": image,
             "tag": tag,
-            "project": PROJECT,
             "repository": f"{CONTAINER_REGISTRY}/{PROJECT}/{image}",
         }
 
