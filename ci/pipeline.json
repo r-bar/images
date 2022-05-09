@@ -8,6 +8,36 @@
                "trigger": true
             },
             {
+               "config": {
+                  "image_resource": {
+                     "inputs": [
+                        {
+                           "name": "git-repo"
+                        }
+                     ],
+                     "outputs": [
+                        {
+                           "name": "git-repo"
+                        }
+                     ],
+                     "run": {
+                        "args": [
+                           "-c",
+                           "set -e\napk add jsonnet\ncd git-repo\nmake ci/pipeline.json\n"
+                        ],
+                        "path": "ash"
+                     },
+                     "source": {
+                        "repository": "registry.barth.tech/docker.io/library/python",
+                        "tag": "3.10-alpine"
+                     },
+                     "type": "registry-image"
+                  },
+                  "platform": "linux"
+               },
+               "task": "build-pipeline.json"
+            },
+            {
                "file": "git-repo/ci/pipeline.json",
                "set_pipeline": "self"
             }

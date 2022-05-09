@@ -83,6 +83,33 @@ function(images) {
           trigger: true,
         },
         {
+          task: 'build-pipeline.json',
+          config: {
+            platform: 'linux',
+            image_resource: {
+              type: 'registry-image',
+              source: {
+                repository: 'registry.barth.tech/docker.io/library/python',
+                tag: '3.10-alpine',
+              },
+              inputs: [{ name: 'git-repo' }],
+              outputs: [{ name: 'git-repo' }],
+              run: {
+                path: 'ash',
+                args: [
+                  '-c',
+                  |||
+                    set -e
+                    apk add jsonnet
+                    cd git-repo
+                    make ci/pipeline.json
+                  |||,
+                ],
+              },
+            },
+          },
+        },
+        {
           set_pipeline: 'self',
           file: 'git-repo/ci/pipeline.json',
         },
