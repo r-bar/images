@@ -75,47 +75,47 @@ function(images) {
     //},
   ],
   jobs: [
-    {
-      name: 'update-pipeline',
-      plan: [
-        {
-          get: 'git-repo',
-          trigger: true,
-        },
-        {
-          task: 'build-pipeline.json',
-          config: {
-            platform: 'linux',
-            image_resource: {
-              type: 'registry-image',
-              source: {
-                repository: 'registry.barth.tech/docker.io/library/python',
-                tag: '3.10-alpine',
-              },
-            },
-            inputs: [{ name: 'git-repo' }],
-            outputs: [{ name: 'git-repo' }],
-            run: {
-              path: 'ash',
-              args: [
-                '-c',
-                |||
-                  set -e
-                  apk add -q --no-progress make jsonnet
-                  cd git-repo
-                  ls images
-                  make ci/pipeline.json
-                  cat ci/pipeline.json
-                |||,
-              ],
-            },
-          },
-        },
-        {
-          set_pipeline: 'self',
-          file: 'git-repo/ci/pipeline.json',
-        },
-      ],
-    },
+    //{
+    //  name: 'update-pipeline',
+    //  plan: [
+    //    {
+    //      get: 'git-repo',
+    //      trigger: true,
+    //    },
+    //    {
+    //      task: 'build-pipeline.json',
+    //      config: {
+    //        platform: 'linux',
+    //        image_resource: {
+    //          type: 'registry-image',
+    //          source: {
+    //            repository: 'registry.barth.tech/docker.io/library/python',
+    //            tag: '3.10-alpine',
+    //          },
+    //        },
+    //        inputs: [{ name: 'git-repo' }],
+    //        outputs: [{ name: 'git-repo' }],
+    //        run: {
+    //          path: 'ash',
+    //          args: [
+    //            '-c',
+    //            |||
+    //              set -e
+    //              apk add -q --no-progress make jsonnet
+    //              cd git-repo
+    //              ls images
+    //              make ci/pipeline.json
+    //              cat ci/pipeline.json
+    //            |||,
+    //          ],
+    //        },
+    //      },
+    //    },
+    //    {
+    //      set_pipeline: 'self',
+    //      file: 'git-repo/ci/pipeline.json',
+    //    },
+    //  ],
+    //},
   ] + [image_job(img) for img in images],
 }

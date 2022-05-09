@@ -1,49 +1,6 @@
 {
    "jobs": [
       {
-         "name": "update-pipeline",
-         "plan": [
-            {
-               "get": "git-repo",
-               "trigger": true
-            },
-            {
-               "config": {
-                  "image_resource": {
-                     "source": {
-                        "repository": "registry.barth.tech/docker.io/library/python",
-                        "tag": "3.10-alpine"
-                     },
-                     "type": "registry-image"
-                  },
-                  "inputs": [
-                     {
-                        "name": "git-repo"
-                     }
-                  ],
-                  "outputs": [
-                     {
-                        "name": "git-repo"
-                     }
-                  ],
-                  "platform": "linux",
-                  "run": {
-                     "args": [
-                        "-c",
-                        "set -e\napk add -q --no-progress make jsonnet\ncd git-repo\nls images\nmake ci/pipeline.json\ncat ci/pipeline.json\n"
-                     ],
-                     "path": "ash"
-                  }
-               },
-               "task": "build-pipeline.json"
-            },
-            {
-               "file": "git-repo/ci/pipeline.json",
-               "set_pipeline": "self"
-            }
-         ]
-      },
-      {
          "name": "build-esh-0.1.0",
          "plan": [
             {
