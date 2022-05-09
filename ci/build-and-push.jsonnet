@@ -1,63 +1,57 @@
 local images = import 'images.json';
 
-local project_repo_resources = [
-  {
-    name: '%(project)s:%(tag)s@registry-image' % img,
-    type: 'registry-image',
-    icon: 'docker',
-    source: {
-      repository: img.repository,
-      tag: img.tag,
-      username: '((registry.username))',
-      password: '((registry.password))',
-    },
-  }
-  for img in images
-];
+local image_repo_resource = function(img) {
+  name: '%(image)s-%(tag)s-registry-image' % img,
+  type: 'registry-image',
+  icon: 'docker',
+  source: {
+    repository: img.repository,
+    tag: img.tag,
+    username: '((registry.username))',
+    password: '((registry.password))',
+  },
+};
 
-local project_jobs = [
-  {
-    name: 'build-%(project)s-%(tag)s' % img,
-    plan: [
-      {
-        get: 'git-repo',
-        trigger: true,
-      },
-      {
-        task: 'build',
-        privileged: true,
-        config: {
-          platform: 'linux',
-          image_resource: {
-            type: 'registry-image',
-            source: { repository: 'concourse/oci-build-task' },
-          },
-          inputs: [{ name: 'git-repo' }],
-          outputs: [{ name: 'image' }],
-          params: {
-            DOCKERFILE: 'git-repo/images/%(project)s/Dockerfile' % img,
-            CONTEXT: 'git-repo/images/%(project)s/files' % img,
-            BUILD_ARGS_FILE: 'git-repo/images/%(project)s/tags/%(tag)s' % img,
-          },
-          run: {
-            path: 'build',
-          },
+local image_job = function(img) {
+  name: 'build-%(image)s-%(tag)s' % img,
+  plan: [
+    {
+      get: 'git-repo',
+      trigger: true,
+    },
+    {
+      task: 'build',
+      privileged: true,
+      config: {
+        platform: 'linux',
+        image_resource: {
+          type: 'registry-image',
+          source: { repository: 'concourse/oci-build-task' },
         },
-      },
-      {
-        put: '%(project)s:%(tag)s@registry-image' % img,
+        inputs: [{ name: 'git-repo' }],
+        outputs: [{ name: 'image' }],
         params: {
-          image: 'image/image.tar',
+          DOCKERFILE: 'git-repo/images/%(image)s/Dockerfile' % img,
+          CONTEXT: 'git-repo/images/%(image)s/files' % img,
+          BUILD_ARGS_FILE: 'git-repo/images/%(image)s/tags/%(tag)s' % img,
+        },
+        run: {
+          path: 'build',
         },
       },
-    ],
-  }
-  for img in images
-];
+    },
+    {
+      put: image_repo_resource(img).name,
+      params: {
+        image: 'image/image.tar',
+      },
+    },
+  ],
+};
 
 {
   resource_types: [],
-  resources: project_repo_resources + [
+  resources: [image_repo_resource(img) for img in images] + [
     {
       name: 'git-repo',
       icon: 'github',
@@ -81,5 +75,5 @@ local project_jobs = [
     //  },
     //},
   ],
-  jobs: project_jobs,
+  jobs: [image_job(img) for img in images],
 }
