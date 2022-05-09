@@ -79,7 +79,7 @@ function(images) {
       name: 'update-pipeline',
       plan: [
         {
-          get: 'get-repo',
+          get: 'git-repo',
           trigger: true,
         },
         {
@@ -92,20 +92,20 @@ function(images) {
                 repository: 'registry.barth.tech/docker.io/library/python',
                 tag: '3.10-alpine',
               },
-              inputs: [{ name: 'git-repo' }],
-              outputs: [{ name: 'git-repo' }],
-              run: {
-                path: 'ash',
-                args: [
-                  '-c',
-                  |||
-                    set -e
-                    apk add jsonnet
-                    cd git-repo
-                    make ci/pipeline.json
-                  |||,
-                ],
-              },
+            },
+            inputs: [{ name: 'git-repo' }],
+            outputs: [{ name: 'git-repo' }],
+            run: {
+              path: 'ash',
+              args: [
+                '-c',
+                |||
+                  set -e
+                  apk add jsonnet
+                  cd git-repo
+                  make ci/pipeline.json
+                |||,
+              ],
             },
           },
         },

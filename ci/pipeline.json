@@ -4,36 +4,36 @@
          "name": "update-pipeline",
          "plan": [
             {
-               "get": "get-repo",
+               "get": "git-repo",
                "trigger": true
             },
             {
                "config": {
                   "image_resource": {
-                     "inputs": [
-                        {
-                           "name": "git-repo"
-                        }
-                     ],
-                     "outputs": [
-                        {
-                           "name": "git-repo"
-                        }
-                     ],
-                     "run": {
-                        "args": [
-                           "-c",
-                           "set -e\napk add jsonnet\ncd git-repo\nmake ci/pipeline.json\n"
-                        ],
-                        "path": "ash"
-                     },
                      "source": {
                         "repository": "registry.barth.tech/docker.io/library/python",
                         "tag": "3.10-alpine"
                      },
                      "type": "registry-image"
                   },
-                  "platform": "linux"
+                  "inputs": [
+                     {
+                        "name": "git-repo"
+                     }
+                  ],
+                  "outputs": [
+                     {
+                        "name": "git-repo"
+                     }
+                  ],
+                  "platform": "linux",
+                  "run": {
+                     "args": [
+                        "-c",
+                        "set -e\napk add jsonnet\ncd git-repo\nmake ci/pipeline.json\n"
+                     ],
+                     "path": "ash"
+                  }
                },
                "task": "build-pipeline.json"
             },
