@@ -38,7 +38,8 @@ jobs:
           image_resource:
             type: registry-image
             source:
-              repository: registry.barth.tech/docker.io/library/python:3.10
+              repository: registry.barth.tech/docker.io/library/python
+              tag: '3.10'
           inputs: [{name: git-repo}]
           outputs: [{name: git-repo}]
           run:
