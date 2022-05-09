@@ -32,6 +32,9 @@ jobs:
       - get: git-repo
         trigger: true
 
+      - set_pipeline: self
+        file: /git-repo/ci/pipeline.yaml
+
       - task: generate-full-pipeline
         config:
           platform: linux
@@ -43,7 +46,7 @@ jobs:
           inputs: [{name: git-repo}]
           outputs: [{name: git-repo}]
           run:
-            path: bash
+            path: ash
             args:
               - -c
               - |
@@ -53,5 +56,5 @@ jobs:
                 ./build.py images > ci/images.json
                 jsonnet ci/build-and-push.jsonnet | tee ci/full-pipeline.yaml
 
-      - set_pipeline: self
-        file: git-repo/ci/full-pipeline.yaml
+      - set_pipeline: images
+        file: /git-repo/ci/full-pipeline.yaml
