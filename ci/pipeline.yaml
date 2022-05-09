@@ -39,7 +39,7 @@ jobs:
             type: registry-image
             source:
               repository: registry.barth.tech/docker.io/library/python
-              tag: '3.10'
+              tag: '3.10-alpine'
           inputs: [{name: git-repo}]
           outputs: [{name: git-repo}]
           run:
@@ -48,8 +48,7 @@ jobs:
               - -c
               - |
                 set -e
-                apt-get update
-                apt-get install -y jsonnet
+                apk add jsonnet
                 cd git-repo
                 ./build.py images > ci/images.json
                 jsonnet ci/build-and-push.jsonnet | tee ci/full-pipeline.yaml
