@@ -16,7 +16,7 @@ local image_job = function(img) {
     {
       get: 'git-repo',
       trigger: true,
-      passed: ['update-pipeline'],
+      //passed: ['update-pipeline'],
     },
     {
       task: 'build',
@@ -32,7 +32,8 @@ local image_job = function(img) {
         params: {
           DOCKERFILE: 'git-repo/images/%(image)s/Dockerfile' % img,
           CONTEXT: 'git-repo/images/%(image)s/files' % img,
-          BUILD_ARGS_FILE: 'git-repo/images/%(image)s/tags/%(tag)s' % img,
+          //BUILD_ARGS_FILE: 'git-repo/images/%(image)s/tags/%(tag)s' % img,
+          BUILD_ARGS_FILE: img.tag,
         },
         run: {
           path: 'build',
