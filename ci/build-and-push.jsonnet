@@ -31,9 +31,9 @@ local image_job = function(img) {
         inputs: [{ name: 'git-repo' }],
         outputs: [{ name: 'image' }],
         params: {
-          DOCKERFILE: 'git-repo/images/%(image)s/Dockerfile' % img,
-          CONTEXT: 'git-repo/images/%(image)s/files' % img,
-          BUILD_ARGS_FILE: 'git-repo/images/%(image)s/tags/%(tag)s' % img,
+          DOCKERFILE: '/git-repo/images/%(image)s/Dockerfile' % img,
+          CONTEXT: '/git-repo/images/%(image)s/files' % img,
+          BUILD_ARGS_FILE: '/git-repo/images/%(image)s/tags/%(tag)s' % img,
         },
         run: {
           path: 'build',
