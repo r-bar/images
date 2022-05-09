@@ -101,7 +101,7 @@ function(images) {
                 '-c',
                 |||
                   set -e
-                  apk add jsonnet
+                  apk add -q make jsonnet
                   cd git-repo
                   make ci/pipeline.json
                 |||,

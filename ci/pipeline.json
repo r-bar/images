@@ -30,7 +30,7 @@
                   "run": {
                      "args": [
                         "-c",
-                        "set -e\napk add jsonnet\ncd git-repo\nmake ci/pipeline.json\n"
+                        "set -e\napk add -q make jsonnet\ncd git-repo\nmake ci/pipeline.json\n"
                      ],
                      "path": "ash"
                   }
