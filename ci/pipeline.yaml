@@ -9,8 +9,8 @@ resource_types:
 resources:
 
   - name: git-repo
-    icon: github
     type: git
+    icon: github
     source:
       uri: git@github.com:r-bar/images.git
       branch: master
@@ -33,7 +33,7 @@ jobs:
         trigger: true
 
       - set_pipeline: self
-        file: /git-repo/ci/pipeline.yaml
+        file: git-repo/ci/pipeline.yaml
 
       - task: generate-full-pipeline
         config:
@@ -57,4 +57,4 @@ jobs:
                 jsonnet ci/build-and-push.jsonnet | tee ci/full-pipeline.yaml
 
       - set_pipeline: images
-        file: /git-repo/ci/full-pipeline.yaml
+        file: git-repo/ci/full-pipeline.yaml
