@@ -1,5 +1,3 @@
-local images = import 'images.json';
-
 local image_repo_resource = function(img) {
   name: '%(image)s-%(tag)s-registry-image' % img,
   type: 'registry-image',
@@ -18,6 +16,7 @@ local image_job = function(img) {
     {
       get: 'git-repo',
       trigger: true,
+      passed: ['update-pipeline'],
     },
     {
       task: 'build',
@@ -49,7 +48,7 @@ local image_job = function(img) {
   ],
 };
 
-{
+function(images) {
   resource_types: [],
   resources: [image_repo_resource(img) for img in images] + [
     {
@@ -75,5 +74,19 @@ local image_job = function(img) {
     //  },
     //},
   ],
-  jobs: [image_job(img) for img in images],
+  jobs: [
+    {
+      name: 'update-pipeline',
+      plan: [
+        {
+          get: 'get-repo',
+          trigger: true,
+        },
+        {
+          set_pipeline: 'self',
+          file: 'git-repo/ci/pipeline.json',
+        },
+      ],
+    },
+  ] + [image_job(img) for img in images],
 }
