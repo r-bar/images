@@ -25,11 +25,11 @@ class Cli(ArgumentParser):
 
 
 def images():
-    print('image directory:', IMAGE_DIRECTORY, file=sys.stderr)
+    # print('image directory:', IMAGE_DIRECTORY, file=sys.stderr)
     for path in IMAGE_DIRECTORY.glob("*/tags/*"):
         image = path.relative_to(GIT_ROOT).parts[1]
         tag = path.relative_to(GIT_ROOT).parts[3]
-        print(image, tag, file=sys.stderr)
+        # print(image, tag, file=sys.stderr)
         yield {
             "image": image,
             "tag": tag,
