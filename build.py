@@ -26,15 +26,16 @@ class Cli(ArgumentParser):
 
 def images():
     # print('image directory:', IMAGE_DIRECTORY, file=sys.stderr)
-    for path in IMAGE_DIRECTORY.glob("*/tags/*"):
-        image = path.relative_to(GIT_ROOT).parts[-3]
-        tag = path.relative_to(GIT_ROOT).parts[-1]
-        # print(image, tag, file=sys.stderr)
-        yield {
-            "image": image,
-            "tag": tag,
-            "repository": f"{CONTAINER_REGISTRY}/{PROJECT}/{image}",
-        }
+    assert IMAGE_DIRECTORY.is_dir()
+    for image_dir in IMAGE_DIRECTORY.iterdir():
+        for tag_file in image_dir.joinpath('tags').iterdir():
+            if tag_file.name.startswith('.'):
+                continue
+            yield {
+                "image": image_dir.name,
+                "tag": tag_file.name,
+                "repository": f"{CONTAINER_REGISTRY}/{PROJECT}/{image_dir.name}",
+            }
 
 
 def build(image, tag, dry_run=False):
