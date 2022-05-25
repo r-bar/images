@@ -24,6 +24,16 @@ class Cli(ArgumentParser):
         self.args = self.parse_args()
 
 
+def build_args(image: str, tag: str) -> dict[str, str]:
+    tagfile = IMAGE_DIRECTORY / image / 'tags' / tag
+    args = {}
+    with open(tagfile) as f:
+        for line in f:
+            k, v = line.strip().split("=", maxsplit=1)
+            args[k] = v
+    return args
+
+
 def images():
     # print('image directory:', IMAGE_DIRECTORY, file=sys.stderr)
     assert IMAGE_DIRECTORY.is_dir()
@@ -31,10 +41,14 @@ def images():
         for tag_file in image_dir.joinpath('tags').iterdir():
             if tag_file.name.startswith('.'):
                 continue
+            tag_args = build_args(image_dir.name, tag_file.name)
             yield {
                 "image": image_dir.name,
                 "tag": tag_file.name,
                 "repository": f"{CONTAINER_REGISTRY}/{PROJECT}/{image_dir.name}",
+                "buildArgs": " ".join(
+                    f"--build-arg '{k}={v}'" for k, v in tag_args.items()
+                ),
             }
 
 
