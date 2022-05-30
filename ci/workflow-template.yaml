@@ -8,7 +8,9 @@ spec:
     - name: pipeline
       steps:
         - - name: clone
-            template: git-clone
+            templateRef:
+              name: git
+              template: clone
             arguments:
               parameters:
                 - name: repo-url
@@ -16,40 +18,14 @@ spec:
                 - name: revision
                   value: master
 
-        - - name: debug
-            template: debug
-            arguments:
-              artifacts:
-                - name: repo
-                  from: '{{steps.clone.outputs.artifacts.repo}}'
-
-          - name: list-images
+        - - name: list-images
             template: list-images
             arguments:
               artifacts:
                 - name: repo
                   from: '{{steps.clone.outputs.artifacts.repo}}'
 
-        #- - name: build
-        #    template: build-and-push
-        #    arguments:
-        #      artifacts:
-        #        - name: context
-        #          from: '{{steps.clone.outputs.artifacts.repo}}'
-        #      parameters:
-        #        - name: dockerfile
-        #          value: 'images/{{item.image}}/Dockerfile'
-        #        - name: context-path
-        #          value: 'images/{{item.image}}/files'
-        #        - name: image-name
-        #          value: '{{item.repository}}'
-        #        - name: image-tag
-        #          value: '{{item.tag}}'
-        #        - name: build-args-file
-        #          value: 'images/{{item.image}}/tags/{{item.tag}}'
-        #    withParam: '{{steps.list-images.outputs.result}}'
-
-        - - name: build-one
+        - - name: build
             templateRef:
               name: kaniko
               template: build-and-push-image
@@ -59,33 +35,16 @@ spec:
                   from: '{{steps.clone.outputs.artifacts.repo}}'
               parameters:
                 - name: dockerfile
-                  value: 'images/utility/Dockerfile'
+                  value: 'images/{{item.image}}/Dockerfile'
                 - name: context-path
-                  value: 'images/utility/files'
+                  value: 'images/{{item.image}}/files'
                 - name: image-name
-                  value: registry.barth.tech/library/utility
+                  value: '{{item.repository}}'
                 - name: image-tag
-                  value: latest
+                  value: '{{item.tag}}'
                 - name: build-args-file
-                  value: images/utility/tags/latest
-
-
-    - name: debug
-      inputs:
-        artifacts:
-          - name: repo
-            path: /repo
-      script:
-        image: registry.barth.tech/library/utility
-        workingDir: /repo
-        command: [ash]
-        source: |
-          pwd
-          find
-          python -c 'import build; print(f"{build.GIT_ROOT=}")'
-          python -c 'import build; print(f"{build.IMAGE_DIRECTORY=}")'
-          python -c 'import build; print(f"{Path.pwd()=}")'
-          python build.py images
+                  value: 'images/{{item.image}}/tags/{{item.tag}}'
+            withParam: '{{steps.list-images.outputs.result}}'
 
     - name: list-images
       inputs:
@@ -118,65 +77,3 @@ spec:
           - '{{inputs.parameters.repo-url}}'
           #- https://github.com/r-bar/images.git
           - 'repo'
-
-    - name: build-and-push
-      inputs:
-        parameters:
-          - name: image-name
-          - name: dockerfile
-            default: Dockerfile
-          - name: context-path
-            default: '.'
-            description: The path to the docker build context relative to the context artifact root
-          - name: image-tag
-            default: latest
-          - name: build-args
-            default: ''
-          - name: build-args-file
-            default: ''
-        artifacts:
-          - name: context
-            path: /workspace
-      script:
-        # use the debug image to get access to a shell
-        # https://github.com/GoogleContainerTools/kaniko#debug-image
-        image: gcr.io/kaniko-project/executor:debug
-        command: [ash]
-        source: |
-          set -e
-
-          BUILD_ARGS={{inputs.parameters.build-args}}
-
-          if [ -n '{{inputs.parameters.build-args-file}}' ]; then
-            while read -p line; do
-              if [ -n "$line" ]; then
-                BUILD_ARGS="$BUILD_ARGS --build-arg $line"
-              fi
-            done < {{inputs.parameters.build-args-file}}
-          fi
-
-          # force flag required to "run kaniko outside of a container"
-          # see: https://github.com/GoogleContainerTools/kaniko/issues/1542
-          COMMAND=$(cat <<EOF
-          /kaniko/executor
-            --force
-            '--dockerfile={{inputs.parameters.dockerfile}}'
-            '--context={{inputs.parameters.context-path}}'
-            '--destination={{inputs.parameters.image-name}}:{{inputs.parameters.image-tag}}'
-            $BUILD_ARGS
-          EOF
-          )
-
-          echo $COMMAND
-          eval $COMMAND
-        #args:
-        #  - '--dockerfile={{inputs.parameters.dockerfile}}'
-        #  - '--context={{inputs.parameters.context-path}}'
-        #  - '--destination={{inputs.parameters.image-name}}:{{inputs.parameters.image-tag}}'
-        volumeMounts:
-          - name: dockerconfig
-            mountPath: /kaniko/.docker
-      volumes:
-        - name: dockerconfig
-          secret:
-            secretName: kaniko-dockerconfig
