@@ -64,7 +64,7 @@ def build(image, tag, dry_run=False):
         "-f",
         str(dockerfile),
         "-t",
-        f"{CONTAINER_REGISTRY}/{image}:{tag}",
+        f"{CONTAINER_REGISTRY}/{PROJECT}/{image}:{tag}",
     ]
     with open(tagfile) as f:
         for line in f:
