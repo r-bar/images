@@ -90,7 +90,7 @@ def push(
     image: str, tag: str, dry_run: bool = False, extra_args: list[str] | None = None
 ):
     extra_args = extra_args or []
-    image = f"{CONTAINER_REGISTRY}/{image}:{tag}"
+    image = f"{CONTAINER_REGISTRY}/{PROJECT}/{image}:{tag}"
     command = [CONTAINER_RUNTIME, "push", image]
     command += extra_args
     print(*command)
