@@ -21,11 +21,11 @@ class Cli(ArgumentParser):
         self.add_argument("image", nargs="?")
         self.add_argument("tag", nargs="?")
         self.add_argument("--dry-run", action="store_true")
-        self.args = self.parse_args()
+        self.args, self.extra_args = self.parse_known_args()
 
 
 def build_args(image: str, tag: str) -> dict[str, str]:
-    tagfile = IMAGE_DIRECTORY / image / 'tags' / tag
+    tagfile = IMAGE_DIRECTORY / image / "tags" / tag
     args = {}
     with open(tagfile) as f:
         for line in f:
@@ -38,8 +38,8 @@ def images():
     # print('image directory:', IMAGE_DIRECTORY, file=sys.stderr)
     assert IMAGE_DIRECTORY.is_dir()
     for image_dir in IMAGE_DIRECTORY.iterdir():
-        for tag_file in image_dir.joinpath('tags').iterdir():
-            if tag_file.name.startswith('.'):
+        for tag_file in image_dir.joinpath("tags").iterdir():
+            if tag_file.name.startswith("."):
                 continue
             tag_args = build_args(image_dir.name, tag_file.name)
             yield {
@@ -52,7 +52,10 @@ def images():
             }
 
 
-def build(image, tag, dry_run=False):
+def build(
+    image: str, tag: str, dry_run: bool = False, extra_args: list[str] | None = None
+):
+    extra_args = extra_args or []
     image_dir = IMAGE_DIRECTORY / image
     dockerfile = image_dir / "Dockerfile"
     tagfile = image_dir / "tags" / tag
@@ -70,44 +73,49 @@ def build(image, tag, dry_run=False):
         for line in f:
             key, value = line.strip().split("=", maxsplit=1)
             command += ["--build-arg", f"{key}={value}"]
+    command += extra_args
     print(*command)
     if not dry_run:
         run(command, check=True)
 
 
-def build_all(dry_run=False):
+def build_all(dry_run: bool = False, extra_args: list[str] | None = None):
     for path in Path("images").glob("*/tags/*"):
         image = path.parts[1]
         tag = path.parts[3]
-        build(image, tag, dry_run)
+        build(image, tag, dry_run, extra_args)
 
 
-def push(image, tag, dry_run=False):
+def push(
+    image: str, tag: str, dry_run: bool = False, extra_args: list[str] | None = None
+):
+    extra_args = extra_args or []
     image = f"{CONTAINER_REGISTRY}/{image}:{tag}"
     command = [CONTAINER_RUNTIME, "push", image]
+    command += extra_args
     print(*command)
     if not dry_run:
         run(command, check=True)
 
 
-def push_all(dry_run=False):
+def push_all(dry_run: bool = False, extra_args: list[str] | None = None):
     for path in Path("images").glob("*/tags/*"):
         image = path.parts[1]
         tag = path.parts[3]
-        push(image, tag, dry_run)
+        push(image, tag, dry_run, extra_args)
 
 
 def main():
     cli = Cli()
     match cli.args.command:
         case "build":
-            build(cli.args.image, cli.args.tag, cli.args.dry_run)
+            build(cli.args.image, cli.args.tag, cli.args.dry_run, cli.extra_args)
         case "build-all":
-            build_all(cli.args.dry_run)
+            build_all(cli.args.dry_run, cli.extra_args)
         case "push":
-            push(cli.args.image, cli.args.tag, cli.args.dry_run)
+            push(cli.args.image, cli.args.tag, cli.args.dry_run, cli.extra_args)
         case "push-all":
-            push_all(cli.args.dry_run)
+            push_all(cli.args.dry_run, cli.extra_args)
         case "images":
             json.dump(list(images()), sys.stdout, indent=2)
         case _:
