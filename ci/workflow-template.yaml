@@ -35,15 +35,15 @@ spec:
                   from: '{{steps.clone.outputs.artifacts.repo}}'
               parameters:
                 - name: dockerfile
-                  value: 'images/{{item.image}}/Dockerfile'
+                  value: '{{item.dockerfile}}'
                 - name: context-path
-                  value: 'images/{{item.image}}/files'
+                  value: '{{item.context}}'
                 - name: image-name
                   value: '{{item.repository}}'
                 - name: image-tag
                   value: '{{item.tag}}'
                 - name: build-args-file
-                  value: 'images/{{item.image}}/tags/{{item.tag}}'
+                  value: '{{item.tagFile}}'
             withParam: '{{steps.list-images.outputs.result}}'
 
     - name: list-images
