@@ -64,6 +64,7 @@ def images(
             if image_filter and image_dir.name != image_filter:
                 continue
             repository = f"{CONTAINER_REGISTRY}/{PROJECT}/{image_dir.name}"
+            rel_image_dir = image_dir.relative_to(GIT_ROOT)
             yield {
                 "fullName": f"{repository}:{tag_file.name}",
                 "name": image_dir.name,
@@ -72,10 +73,10 @@ def images(
                 "registry": CONTAINER_REGISTRY,
                 "project": PROJECT,
                 "buildArgs": build_args(tag_file),
-                "tagFile": str(tag_file),
-                "dockerfile": str(image_dir / "Dockerfile"),
-                "imageDir": str(image_dir),
-                "context": str(image_dir / "files"),
+                "tagFile": str(tag_file.relative_to(GIT_ROOT)),
+                "dockerfile": str(rel_image_dir / "Dockerfile"),
+                "imageDir": str(rel_image_dir),
+                "context": str(rel_image_dir / "files"),
             }
 
 
