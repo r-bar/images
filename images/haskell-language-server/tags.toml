@@ -1,0 +1,6 @@
+["latest".args]
+
+["1.7.0.0".args]
+"UBUNTU_VERSION" = "22.04"
+"GHC_VERSION" = "9.2.1"
+"HLS_VERSION" = "1.7.0.0"
