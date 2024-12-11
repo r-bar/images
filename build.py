@@ -9,7 +9,7 @@ from dataclasses import dataclass, field, asdict
 from argparse import ArgumentParser
 from pathlib import Path
 from subprocess import run
-from typing import Iterable, Literal
+from typing import Iterable, Literal, ClassVar
 
 PROJECT = "library"
 CONTAINER_REGISTRY = os.environ.get("CONTAINER_REGISTRY", "registry.barth.tech")
@@ -17,7 +17,6 @@ CONTAINER_RUNTIME = os.environ.get("CONTAINER_RUNTIME", "podman")
 GIT_ROOT = Path(__file__).parent
 IMAGE_DIRECTORY = GIT_ROOT / "images"
 TAG_FILE = "tags.toml"
-VALID_TAG_KEYS = {"args", "dockerfile"}
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -51,20 +50,28 @@ class TagData:
         return tags
 
 
-class Cli(ArgumentParser):
-    command: Literal["build", "push", "images"]
+class Cli:
+    """Management script for building and pushing images in this repository."""
+
+    COMMANDS: ClassVar[list[str]] = ("build", "push", "images")
+
+    command: Literal[COMMANDS]
     image: str | None
     tag: str | None
     dry_run: bool
     extra_args: list[str]
+    parser: ArgumentParser
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.add_argument("command")
-        self.add_argument("--image")
-        self.add_argument("--tag")
-        self.add_argument("--dry-run", action="store_true")
-        args, self.extra_args = self.parse_known_args()
+    def __init__(self, *args, argv=sys.argv[1:], **kwargs):
+        self.parser = parser = ArgumentParser(description=self.__doc__)
+        sub = parser.add_subparsers(dest="command")
+        _images = sub.add_parser("images", help="List images and tags")
+        _build = sub.add_parser("build", help="Build images")
+        _push = sub.add_parser("push", help="Push images")
+        parser.add_argument("--image")
+        parser.add_argument("--tag")
+        parser.add_argument("--dry-run", action="store_true")
+        args, self.extra_args = parser.parse_known_args()
         for k, v in vars(args).items():
             setattr(self, k, v)
 
