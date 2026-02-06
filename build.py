@@ -22,10 +22,10 @@ TAG_FILE = "tags.toml"
 @dataclass(frozen=True, kw_only=True)
 class Image:
     name: str
-    fullName: str
+    full_name: str
     tag: str
     repository: str
-    buildArgs: dict[str, str] = field(default_factory=dict)
+    build_args: dict[str, str] = field(default_factory=dict)
     dockerfile: str
     imageDir: str
     context: str
@@ -53,9 +53,7 @@ class TagData:
 class Cli:
     """Management script for building and pushing images in this repository."""
 
-    COMMANDS: ClassVar[list[str]] = ("build", "push", "images")
-
-    command: Literal[COMMANDS]
+    command: Literal["build", "push", "images"]
     image: str | None
     tag: str | None
     dry_run: bool
@@ -65,12 +63,19 @@ class Cli:
     def __init__(self, *args, argv=sys.argv[1:], **kwargs):
         self.parser = parser = ArgumentParser(description=self.__doc__)
         sub = parser.add_subparsers(dest="command")
+
         _images = sub.add_parser("images", help="List images and tags")
-        _build = sub.add_parser("build", help="Build images")
-        _push = sub.add_parser("push", help="Push images")
-        parser.add_argument("--image")
-        parser.add_argument("--tag")
-        parser.add_argument("--dry-run", action="store_true")
+
+        build = sub.add_parser("build", help="Build images")
+        build.add_argument("image", nargs="?")
+        build.add_argument("tag", nargs="?")
+        build.add_argument("--dry-run", action="store_true")
+
+        push = sub.add_parser("push", help="Push images")
+        push.add_argument("--image", nargs="?")
+        push.add_argument("--tag", nargs="?")
+        push.add_argument("--dry-run", action="store_true")
+
         args, self.extra_args = parser.parse_known_args()
         for k, v in vars(args).items():
             setattr(self, k, v)
@@ -82,19 +87,23 @@ def images(
     # print('image directory:', IMAGE_DIRECTORY, file=sys.stderr)
     assert IMAGE_DIRECTORY.is_dir()
     for image_dir in IMAGE_DIRECTORY.iterdir():
+        if image_dir.name.startswith("_") or image_filter and image_dir.name != image_filter:
+            continue
         rel_image_dir = image_dir.relative_to(GIT_ROOT)
         repository = f"{CONTAINER_REGISTRY}/{PROJECT}/{image_dir.name}"
         tag_file = image_dir / TAG_FILE
         tags = TagData.load(tag_file)
         for config in tags:
+            if tag_filter and config.tag != tag_filter:
+                continue
             yield Image(
-                fullName=f"{repository}:{tag_file.name}",
+                full_name=f"{repository}:{tag_file.name}",
                 name=image_dir.name,
                 tag=config.tag,
                 repository=repository,
                 registry=CONTAINER_REGISTRY,
                 project=PROJECT,
-                buildArgs=config.args,
+                build_args=config.args,
                 dockerfile=str(rel_image_dir / config.dockerfile),
                 imageDir=str(rel_image_dir),
                 context=str(rel_image_dir / "files"),
@@ -111,11 +120,11 @@ def run_build(image: Image, dry_run: bool = False, extra_args: list[str] | None 
         "-f",
         image.dockerfile,
         "-t",
-        image.fullName,
+        image.full_name,
     ]
     command += list(
         it.chain.from_iterable(
-            ("--build-arg", f"{k}={v}") for k, v in image["buildArgs"].items()
+            ("--build-arg", f"{k}={v}") for k, v in image.build_args.items()
         )
     )
     print(*command)
@@ -124,8 +133,8 @@ def run_build(image: Image, dry_run: bool = False, extra_args: list[str] | None 
 
 
 def build(
-    image_filter: str,
-    tag_filter: str,
+    image_filter: str | None,
+    tag_filter: str | None,
     dry_run: bool = False,
     extra_args: list[str] | None = None,
 ):
@@ -137,7 +146,7 @@ def build(
 def run_push(image: Image, dry_run: bool = False, extra_args: list[str] | None = None):
     """Run the image push command"""
     extra_args = extra_args or []
-    command = [CONTAINER_RUNTIME, "push", image["fullName"]]
+    command = [CONTAINER_RUNTIME, "push", image.full_name]
     command += extra_args
     print(*command)
     if not dry_run:

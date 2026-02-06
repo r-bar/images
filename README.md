@@ -27,6 +27,9 @@ build.py push-all
 Adding the `--dry-run` argument to any of the above commands will print what
 would have been run, but not execute anything.
 
+## Create a new image
+
+Use cookiecutter to template a new repository.
 
 ## Repo Structure
 

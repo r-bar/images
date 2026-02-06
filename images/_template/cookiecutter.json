@@ -1,0 +1,6 @@
+{
+  "project_name": "Example",
+  "project_slug": "{{ cookiecutter.project_name | lower | replace(' ', '_') }}",
+  "base_image": "alpine",
+  "base_image_version": "latest"
+}

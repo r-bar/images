@@ -1,0 +1,7 @@
+[tools]
+cookiecutter = "latest"
+
+[tasks.new]
+description = "Create a new image from the template"
+dir = "images"
+run = "cookiecutter _template"
