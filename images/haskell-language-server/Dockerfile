@@ -1,7 +1,7 @@
 ARG UBUNTU_VERSION=22.04
 ARG GHC_VERSION=9.2.1
 ARG HLS_VERSION=1.7.0.0
-FROM registry.barth.tech/docker.io/library/ubuntu:$UBUNTU_VERSION
+FROM docker.io/library/ubuntu:$UBUNTU_VERSION
 
 VOLUME /workdir
 WORKDIR /workdir

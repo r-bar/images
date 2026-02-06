@@ -1,7 +1,18 @@
 [tools]
 cookiecutter = "latest"
 
+[env]
+_.python.venv = { path = ".venv", create = true, uv_create_args = ['--seed'] }
+
 [tasks.new]
 description = "Create a new image from the template"
 dir = "images"
 run = "cookiecutter _template"
+
+
+[tasks.build-podman]
+env = { DOCKER_HOST = "unix://{{ exec(command=\"podman info --format '{{.Host.RemoteSocket.Path}}'\") }}" }
+run = "docker buildx bake"
+
+[tasks.build]
+run = "docker buildx bake"

@@ -1,8 +1,0 @@
-["0.8.1".args]
-"VERSION" = "0.8.1"
-
-["0.10.0".args]
-"VERSION" = "0.10.0"
-
-["latest".args]
-"VERSION" = "0.10.0"

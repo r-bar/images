@@ -1,7 +1,0 @@
-["4.2.1".args]
-"NODE_VERSION" = "18"
-"LANGSERVERS_VERSION" = "4.2.1"
-
-["latest".args]
-"NODE_VERSION" = "18"
-"LANGSERVERS_VERSION" = "latest"
