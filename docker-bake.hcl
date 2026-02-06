@@ -11,6 +11,7 @@ group "default" {
     "sumy_0-10",
     "utility",
     "vscode-langservers",
+    "opencode",
   ]
 }
 
@@ -105,5 +106,20 @@ target "vscode-langservers" {
   args = {
     "NODE_VERSION" = "18"
     "LANGSERVERS_VERSION" = "4.2.1"
+  }
+}
+
+target "opencode" {
+  tags = [
+    "${registry}/opencode:latest",
+    "${registry}/opencode:1.1.53",
+  ]
+  dockerfile = "Dockerfile"
+  context = "images/opencode"
+  args = {
+    BASE_VERSION = "3.23"
+    OPENCODE_VERSION = "v1.1.53"
+    OPENCODE_PACKAGE = "linux" # desktop-linux, windows, desktop-darwin, darwin
+    OPENCODE_ARCH = "x64-musl" # aarch64, arm64, x64-musl
   }
 }
