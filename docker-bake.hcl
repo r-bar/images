@@ -117,9 +117,9 @@ target "opencode" {
   dockerfile = "Dockerfile"
   context = "images/opencode"
   args = {
-    BASE_VERSION = "3.23"
+    BASE_VERSION = "13.3-slim"
     OPENCODE_VERSION = "v1.1.53"
     OPENCODE_PACKAGE = "linux" # desktop-linux, windows, desktop-darwin, darwin
-    OPENCODE_ARCH = "x64-musl" # aarch64, arm64, x64-musl
+    OPENCODE_ARCH = "x64" # aarch64, arm64, x64-musl
   }
 }
