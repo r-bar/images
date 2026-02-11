@@ -44,7 +44,7 @@ jobs:
         uses: docker/bake-action@v6
         with:
           push: true
-          provenence: true
+          provenance: true
       
       # This step generates an artifact attestation for the image, which is an
       # unforgeable statement about where and how it was built. It increases
