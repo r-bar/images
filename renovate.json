@@ -10,13 +10,18 @@
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
   "automerge": false,
-  "labels": ["dependencies", "renovate"],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
   "commitMessagePrefix": "chore(deps): ",
   "customManagers": [
     {
       "customType": "regex",
       "description": "Update opencode version in docker-bake.hcl",
-      "fileMatch": ["^docker-bake\\.hcl$"],
+      "managerFilePatterns": [
+        "/^docker-bake\\.hcl$/"
+      ],
       "matchStrings": [
         "OPENCODE_VERSION\\s*=\\s*\\\"v(?<currentValue>[^\\\"]+)\\\""
       ],
@@ -28,8 +33,12 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["anomalyco/opencode"],
-      "addLabels": ["opencode"],
+      "matchPackageNames": [
+        "anomalyco/opencode"
+      ],
+      "addLabels": [
+        "opencode"
+      ],
       "commitMessageTopic": "opencode {{newValue}}"
     }
   ]
