@@ -122,17 +122,32 @@ target "vscode-langservers" {
   }
 }
 
-target "opencode" {
+target "opencode_1-1-56" {
   inherits = ["docker-metadata-action"]
   tags = [
     "${registry}/opencode:latest",
-    "${registry}/opencode:1.1.53",
+    "${registry}/opencode:1.1.56",
   ]
   dockerfile = "Dockerfile"
   context = "images/opencode"
   args = {
     BASE_VERSION = "13.3-slim"
     OPENCODE_VERSION = "v1.1.56"
+    OPENCODE_PACKAGE = "linux" # desktop-linux, windows, desktop-darwin, darwin
+    OPENCODE_ARCH = "x64" # aarch64, arm64, x64-musl
+  }
+}
+
+target "opencode_1-1-53" {
+  inherits = ["docker-metadata-action"]
+  tags = [
+    "${registry}/opencode:1.1.53",
+  ]
+  dockerfile = "Dockerfile"
+  context = "images/opencode"
+  args = {
+    BASE_VERSION = "13.3-slim"
+    OPENCODE_VERSION = "v1.1.53"
     OPENCODE_PACKAGE = "linux" # desktop-linux, windows, desktop-darwin, darwin
     OPENCODE_ARCH = "x64" # aarch64, arm64, x64-musl
   }
