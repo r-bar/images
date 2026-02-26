@@ -132,7 +132,7 @@ target "opencode_1-1-56" {
   context = "images/opencode"
   args = {
     BASE_VERSION = "13.3-slim"
-    OPENCODE_VERSION = "v1.1.56"
+    OPENCODE_VERSION = "v1.2.15"
     OPENCODE_PACKAGE = "linux" # desktop-linux, windows, desktop-darwin, darwin
     OPENCODE_ARCH = "x64" # aarch64, arm64, x64-musl
   }
@@ -147,7 +147,7 @@ target "opencode_1-1-53" {
   context = "images/opencode"
   args = {
     BASE_VERSION = "13.3-slim"
-    OPENCODE_VERSION = "v1.1.53"
+    OPENCODE_VERSION = "v1.2.15"
     OPENCODE_PACKAGE = "linux" # desktop-linux, windows, desktop-darwin, darwin
     OPENCODE_ARCH = "x64" # aarch64, arm64, x64-musl
   }
